@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vainqueur — Project Builder</title>
+<meta name="robots" content="noindex">
+<style>
+:root{--ink:#120d08;--ink2:#1b140c;--line:rgba(201,164,92,.28);--gold:#c9a45c;--gold2:#e6c683;--ivory:#f4ebd8;--muted:#bdae92;--red:#7c231c;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--ivory);font:16px/1.55 "Helvetica Neue",Arial,system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:40px 20px 120px}
+h1{font:400 44px/1.05 Georgia,"Times New Roman",serif;margin:0 0 8px;letter-spacing:-.01em}
+h1 em{font-style:normal;color:var(--gold2)}
+h2{font:400 26px/1.2 Georgia,serif;margin:0 0 14px}
+.lead{color:var(--muted);margin:0 0 30px}
+.card{background:var(--ink2);border:1px solid var(--line);border-radius:8px;padding:24px;margin-bottom:22px}
+.step{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold2);margin-bottom:8px}
+label{display:block;font-size:13px;font-weight:600;letter-spacing:.04em;color:#e3d6bd;margin:14px 0 6px}
+label small{font-weight:400;color:var(--muted);letter-spacing:0}
+input[type=text],input[type=url],input[type=number],textarea,select{width:100%;padding:11px 12px;border-radius:5px;border:1px solid rgba(201,164,92,.35);background:#0e0a06;color:var(--ivory);font:inherit}
+textarea{min-height:80px;resize:vertical}
+input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid var(--gold2);outline-offset:1px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 16px}
+button,.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:5px;border:1px solid rgba(201,164,92,.55);background:transparent;color:var(--ivory);font:600 13px/1 inherit;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+button.gold{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+button.small{padding:7px 10px;font-size:11px}
+button.danger{border-color:rgba(200,80,70,.6);color:#f0b3aa}
+button:disabled{opacity:.4;cursor:not-allowed}
+.list{display:flex;flex-direction:column;gap:10px}
+.item{display:flex;align-items:center;gap:14px;padding:10px;border:1px solid var(--line);border-radius:6px;background:#15100a}
+.item img{width:64px;height:64px;object-fit:cover;border-radius:4px;background:#2a2018}
+.item .meta{flex:1;min-width:0}
+.item strong{display:block;font:400 19px/1.2 Georgia,serif}
+.item span{font-size:13px;color:var(--muted)}
+.item .acts{display:flex;gap:6px;flex-wrap:wrap}
+.sec{border:1px dashed rgba(201,164,92,.35);border-radius:6px;padding:16px;margin-top:14px;background:#15100a}
+.sec-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:12px}
+.thumb{border:1px solid var(--line);border-radius:6px;padding:8px;background:#0e0a06}
+.thumb img{width:100%;height:120px;object-fit:cover;border-radius:4px;display:block}
+.thumb input{margin-top:6px;padding:7px 8px;font-size:13px}
+.thumb button{margin-top:6px;width:100%;justify-content:center}
+.status{margin-top:12px;font-size:14px;color:var(--gold2);min-height:1.2em}
+.status.err{color:#f0b3aa}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+.check{display:flex;align-items:center;gap:10px;margin-top:14px}
+.check input{width:18px;height:18px}
+.preview{width:180px;aspect-ratio:4/5;border-radius:6px;overflow:hidden;border:1px solid var(--line);background:#2a2018;margin-top:10px}
+.preview img{width:100%;height:100%;object-fit:cover;display:block}
+.bar{position:fixed;left:0;right:0;bottom:0;background:rgba(18,13,8,.95);border-top:1px solid var(--line);padding:14px 20px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap;z-index:5}
+.hidden{display:none!important}
+ol.how{margin:0;padding-left:20px;color:#e3d6bd}
+ol.how li{margin:4px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Project <em>Builder</em></h1>
+  <p class="lead">Add, edit, reorder or remove projects on your Vainqueur website — no coding. Everything happens on your own computer.</p>
+
+  <div class="card">
+    <span class="step">How it works</span>
+    <ol class="how">
+      <li>Open your current <b>index.html</b> below.</li>
+      <li>Add a new project (or edit one). Upload its images and fill in the details.</li>
+      <li>Click <b>Download updated website</b> and upload the new <b>index.html</b> to your hosting, replacing the old one.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <span class="step">Step 1</span>
+    <h2>Open your website file</h2>
+    <input type="file" id="siteFile" accept=".html,text/html">
+    <div class="status" id="fileStatus"></div>
+  </div>
+
+  <div class="card hidden" id="listCard">
+    <span class="step">Your projects</span>
+    <h2>Projects added with the Builder</h2>
+    <p class="hint">Raunaq Homestay and Tanya Timal are built into the page by hand and always stay. The projects below appear alongside them, at the position you choose.</p>
+    <div class="list" id="list" style="margin-top:14px"></div>
+    <div style="margin-top:16px"><button class="gold" id="newBtn" type="button">+ Add a new project</button></div>
+  </div>
+
+  <div class="card hidden" id="formCard">
+    <span class="step">Step 2</span>
+    <h2 id="formTitle">New project</h2>
+    <div class="row">
+      <div><label>Client name *</label><input type="text" id="fClient" placeholder="e.g. Myoud Perfumery"></div>
+      <div><label>Type of work</label>
+        <select id="fCat"><option value="web">Website</option><option value="brand">Logo &amp; identity</option><option value="web brand">Logo + website</option></select></div>
+    </div>
+    <div class="row">
+      <div><label>Short line <small>(optional)</small></label><input type="text" id="fSummary" placeholder="e.g. Logo, label and print"></div>
+      <div><label>Website link <small>(optional)</small></label><input type="url" id="fSite" placeholder="https://"></div>
+    </div>
+    <div class="row">
+      <div><label>Position in The Work <small>(1 = first)</small></label><input type="number" id="fPos" min="1" value="1"></div>
+      <div><label>Card background <small>(for logos)</small></label><input type="text" id="fCardBg" placeholder="#fef7e7 — leave empty for photos"></div>
+    </div>
+
+    <label>Card image * <small>— the picture on the project box</small></label>
+    <input type="file" id="fCard" accept="image/*">
+    <div class="check"><input type="checkbox" id="fContain"><span>This is a logo — show the whole image on the background colour (don't crop)</span></div>
+    <div class="preview" id="cardPrev"></div>
+
+    <h2 style="margin-top:30px">Sections in the pop-up</h2>
+    <p class="hint">Each section has a title and its own images. Use “Sketches” for process drawings, “Logo on colour” for the final mark, and “Photos” for everything else.</p>
+    <div id="sections"></div>
+    <button type="button" id="addSec" style="margin-top:14px">+ Add a section</button>
+
+    <h2 style="margin-top:30px">Coming soon <small style="font:14px Arial;color:var(--muted)">(optional)</small></h2>
+    <div class="check"><input type="checkbox" id="fSoon"><span>Show a “coming soon” note</span></div>
+    <div class="row" id="soonFields">
+      <div><label>Title</label><input type="text" id="fSoonTitle" placeholder="The final bottle"></div>
+      <div><label>Text</label><input type="text" id="fSoonText" placeholder="Coming soon"></div>
+    </div>
+
+    <h2 style="margin-top:30px">Client reviews <small style="font:14px Arial;color:var(--muted)">(optional)</small></h2>
+    <div id="reviews"></div>
+    <button type="button" id="addRev" style="margin-top:14px">+ Add a review</button>
+
+    <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="gold" type="button" id="saveProj">Save project</button>
+      <button type="button" id="cancelProj">Cancel</button>
+    </div>
+    <div class="status" id="formStatus"></div>
+  </div>
+</div>
+
+<div class="bar hidden" id="bar">
+  <button class="gold" type="button" id="download">Download updated website</button>
+  <span class="status" id="barStatus" style="margin:0;align-self:center"></span>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var siteText = '', projects = [], editing = -1, draft = null;
+  var RE = /(<script type="application\/json" id="vq-projects">)([\s\S]*?)(<\/script>)/;
+  var LABEL = {web:'Website', brand:'Logo & identity', 'web brand':'Logo + website'};
+
+  function slug(s){ return (s || 'project').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'project'; }
+  function status(id, msg, err){ var s = $(id); s.textContent = msg || ''; s.classList.toggle('err', !!err); }
+
+  /* ---- images: shrink big photos so the page stays fast ---- */
+  function readImage(file, maxSide){
+    return new Promise(function(res, rej){
+      var fr = new FileReader();
+      fr.onload = function(){
+        var im = new Image();
+        im.onload = function(){
+          var s = Math.min(1, (maxSide || 1600) / Math.max(im.width, im.height));
+          var c = document.createElement('canvas'); c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
+          var g = c.getContext('2d'); g.drawImage(im, 0, 0, c.width, c.height);
+          var png = /png|webp|gif/.test(file.type);
+          var out = png ? c.toDataURL('image/webp', .86) : c.toDataURL('image/jpeg', .82);
+          if (png && out.indexOf('data:image/webp') !== 0) out = c.toDataURL('image/png');
+          res(out);
+        };
+        im.onerror = rej; im.src = fr.result;
+      };
+      fr.onerror = rej; fr.readAsDataURL(file);
+    });
+  }
+
+  /* ---- step 1: open index.html ---- */
+  $('siteFile').addEventListener('change', function(e){
+    var f = e.target.files[0]; if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function(){
+      siteText = fr.result;
+      var m = RE.exec(siteText);
+      if (!m){ status('fileStatus', 'This file has no project list. Please open the index.html from your Vainqueur website zip.', true); return; }
+      try { projects = JSON.parse(m[2].replace(/<\\\//g, '</') || '[]'); } catch(err){ projects = []; }
+      status('fileStatus', 'Opened ' + f.name + ' — ' + projects.length + ' project' + (projects.length === 1 ? '' : 's') + ' added with the Builder.');
+      $('listCard').classList.remove('hidden'); $('bar').classList.remove('hidden');
+      renderList();
+    };
+    fr.readAsText(f);
+  });
+
+  function renderList(){
+    var L = $('list'); L.innerHTML = '';
+    if (!projects.length){ L.innerHTML = '<p class="hint">No Builder projects yet.</p>'; return; }
+    projects.forEach(function(p, i){
+      var it = document.createElement('div'); it.className = 'item';
+      var im = document.createElement('img'); im.src = p.cardImage || ''; im.alt = '';
+      var meta = document.createElement('div'); meta.className = 'meta';
+      var st = document.createElement('strong'); st.textContent = p.client;
+      var sp = document.createElement('span'); sp.textContent = (LABEL[p.category] || p.category) + ' · position ' + (p.position || 'last');
+      meta.appendChild(st); meta.appendChild(sp);
+      var acts = document.createElement('div'); acts.className = 'acts';
+      [['Edit', function(){ edit(i); }], ['↑', function(){ move(i, -1); }], ['↓', function(){ move(i, 1); }], ['Remove', function(){ remove(i); }, 'danger']].forEach(function(a){
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'small ' + (a[2] || ''); b.textContent = a[0]; b.onclick = a[1]; acts.appendChild(b);
+      });
+      it.appendChild(im); it.appendChild(meta); it.appendChild(acts); L.appendChild(it);
+    });
+  }
+  function move(i, d){ var j = i + d; if (j < 0 || j >= projects.length) return; var t = projects[i]; projects[i] = projects[j]; projects[j] = t; renderList(); dirty(); }
+  function remove(i){ if (!confirm('Remove ' + projects[i].client + ' from the website?')) return; projects.splice(i, 1); renderList(); dirty(); }
+  function dirty(){ status('barStatus', 'Changes ready — download the updated website.'); }
+
+  /* ---- step 2: the form ---- */
+  function blank(){ return {client:'', category:'brand', summary:'', website:'', position:1, cardImage:'', cardFit:'', cardBg:'', sections:[], comingSoon:null, reviews:[]}; }
+  function openForm(p, idx){
+    editing = idx; draft = JSON.parse(JSON.stringify(p));
+    $('formTitle').textContent = idx < 0 ? 'New project' : 'Edit ' + p.client;
+    $('fClient').value = p.client || ''; $('fCat').value = p.category || 'brand'; $('fSummary').value = p.summary || '';
+    $('fSite').value = p.website || ''; $('fPos').value = p.position || 1; $('fCardBg').value = p.cardBg || '';
+    $('fContain').checked = p.cardFit === 'contain'; $('fCard').value = '';
+    $('fSoon').checked = !!p.comingSoon; $('fSoonTitle').value = p.comingSoon ? p.comingSoon.title || '' : ''; $('fSoonText').value = p.comingSoon ? p.comingSoon.text || '' : '';
+    showCard(); renderSections(); renderReviews();
+    $('formCard').classList.remove('hidden'); status('formStatus', '');
+    $('formCard').scrollIntoView({behavior:'smooth'});
+  }
+  function showCard(){ var pv = $('cardPrev'); pv.innerHTML = ''; if (draft.cardImage){ var i = document.createElement('img'); i.src = draft.cardImage; i.style.objectFit = $('fContain').checked ? 'contain' : 'cover'; pv.style.background = $('fCardBg').value || '#2a2018'; pv.appendChild(i); } }
+  function edit(i){ openForm(projects[i], i); }
+  $('newBtn').onclick = function(){ openForm(blank(), -1); };
+  $('cancelProj').onclick = function(){ $('formCard').classList.add('hidden'); };
+  $('fContain').onchange = showCard; $('fCardBg').oninput = showCard;
+  $('fCard').onchange = function(e){ var f = e.target.files[0]; if (!f) return; readImage(f, 1400).then(function(d){ draft.cardImage = d; showCard(); }); };
+
+  function renderSections(){
+    var box = $('sections'); box.innerHTML = '';
+    draft.sections.forEach(function(s, si){
+      var w = document.createElement('div'); w.className = 'sec';
+      w.innerHTML = '<div class="sec-head"><strong>Section ' + (si + 1) + '</strong><span><button type="button" class="small" data-a="up">↑</button> <button type="button" class="small" data-a="down">↓</button> <button type="button" class="small danger" data-a="del">Remove</button></span></div>' +
+        '<div class="row"><div><label>Small label <small>(optional)</small></label><input type="text" data-k="label" placeholder="Behind the process"></div>' +
+        '<div><label>Title</label><input type="text" data-k="title" placeholder="From the first sketch"></div></div>' +
+        '<label>Text <small>(optional)</small></label><textarea data-k="text"></textarea>' +
+        '<div class="row"><div><label>Style</label><select data-k="style"><option value="plain">Photos</option><option value="mark">Logo on colour</option><option value="sketch">Sketches (paper look)</option></select></div>' +
+        '<div><label>Background colour <small>(for “Logo on colour”)</small></label><input type="text" data-k="bg" placeholder="#fef7e7"></div></div>' +
+        '<label>Images</label><input type="file" accept="image/*" multiple data-files><div class="thumbs"></div>';
+      w.querySelectorAll('[data-k]').forEach(function(inp){ inp.value = s[inp.getAttribute('data-k')] || (inp.tagName === 'SELECT' ? 'plain' : ''); inp.oninput = inp.onchange = function(){ s[inp.getAttribute('data-k')] = inp.value; }; });
+      w.querySelector('[data-a=up]').onclick = function(){ if (si > 0){ draft.sections.splice(si - 1, 0, draft.sections.splice(si, 1)[0]); renderSections(); } };
+      w.querySelector('[data-a=down]').onclick = function(){ if (si < draft.sections.length - 1){ draft.sections.splice(si + 1, 0, draft.sections.splice(si, 1)[0]); renderSections(); } };
+      w.querySelector('[data-a=del]').onclick = function(){ draft.sections.splice(si, 1); renderSections(); };
+      var th = w.querySelector('.thumbs');
+      function drawThumbs(){
+        th.innerHTML = '';
+        (s.images || []).forEach(function(im, ii){
+          var t = document.createElement('div'); t.className = 'thumb';
+          t.innerHTML = '<img alt=""><input type="text" placeholder="Caption (optional)" data-c><input type="text" placeholder="Badge, e.g. Coming soon" data-b><button type="button" class="small danger">Remove</button>';
+          t.querySelector('img').src = im.src;
+          var c = t.querySelector('[data-c]'), b = t.querySelector('[data-b]');
+          c.value = im.caption || ''; b.value = im.badge || '';
+          c.oninput = function(){ im.caption = c.value; im.alt = c.value || draft.client; };
+          b.oninput = function(){ im.badge = b.value; };
+          t.querySelector('button').onclick = function(){ s.images.splice(ii, 1); drawThumbs(); };
+          th.appendChild(t);
+        });
+      }
+      drawThumbs();
+      w.querySelector('[data-files]').onchange = function(e){
+        var files = Array.prototype.slice.call(e.target.files); s.images = s.images || [];
+        status('formStatus', 'Preparing images…');
+        Promise.all(files.map(function(f){ return readImage(f, 1600); })).then(function(list){
+          list.forEach(function(d){ s.images.push({src:d, caption:'', alt:$('fClient').value || ''}); });
+          drawThumbs(); status('formStatus', '');
+        });
+        e.target.value = '';
+      };
+      box.appendChild(w);
+    });
+  }
+  $('addSec').onclick = function(){ draft.sections.push({label:'', title:'', text:'', style:'plain', images:[]}); renderSections(); };
+
+  function renderReviews(){
+    var box = $('reviews'); box.innerHTML = '';
+    draft.reviews.forEach(function(r, ri){
+      var w = document.createElement('div'); w.className = 'sec';
+      w.innerHTML = '<div class="sec-head"><strong>Review ' + (ri + 1) + '</strong><button type="button" class="small danger">Remove</button></div>' +
+        '<label>Their words</label><textarea data-k="quote"></textarea>' +
+        '<div class="row"><div><label>Name</label><input type="text" data-k="name" placeholder="The owner"></div><div><label>Where it was said</label><input type="text" data-k="source" placeholder="via WhatsApp"></div></div>';
+      w.querySelectorAll('[data-k]').forEach(function(inp){ inp.value = r[inp.getAttribute('data-k')] || ''; inp.oninput = function(){ r[inp.getAttribute('data-k')] = inp.value; }; });
+      w.querySelector('button').onclick = function(){ draft.reviews.splice(ri, 1); renderReviews(); };
+      box.appendChild(w);
+    });
+  }
+  $('addRev').onclick = function(){ draft.reviews.push({quote:'', name:'', source:''}); renderReviews(); };
+
+  $('saveProj').onclick = function(){
+    var name = $('fClient').value.trim();
+    if (!name){ status('formStatus', 'Please add the client name.', true); return; }
+    if (!draft.cardImage){ status('formStatus', 'Please add a card image.', true); return; }
+    var site = $('fSite').value.trim();
+    if (site && !/^https?:\/\//i.test(site)) site = 'https://' + site;
+    var p = draft;
+    p.client = name; p.id = p.id || slug(name) + '-' + Date.now().toString(36).slice(-4);
+    p.category = $('fCat').value; p.summary = $('fSummary').value.trim(); p.website = site;
+    p.position = Math.max(1, parseInt($('fPos').value, 10) || 1);
+    p.cardFit = $('fContain').checked ? 'contain' : ''; p.cardBg = $('fCardBg').value.trim();
+    p.comingSoon = $('fSoon').checked ? {title:$('fSoonTitle').value.trim() || 'Coming soon', text:$('fSoonText').value.trim() || 'Coming soon'} : null;
+    p.sections = p.sections.filter(function(s){ return (s.images && s.images.length) || s.title || s.text; });
+    p.reviews = p.reviews.filter(function(r){ return r.quote && r.quote.trim(); });
+    if (editing < 0) projects.push(p); else projects[editing] = p;
+    $('formCard').classList.add('hidden'); renderList(); dirty();
+    $('listCard').scrollIntoView({behavior:'smooth'});
+  };
+
+  /* ---- step 3: save the new index.html ---- */
+  $('download').onclick = function(){
+    if (!siteText){ status('barStatus', 'Open your index.html first.', true); return; }
+    var json = JSON.stringify(projects).replace(/<\//g, '<\\/');
+    var out = siteText.replace(RE, function(_, a, __, c){ return a + json + c; });
+    var blob = new Blob([out], {type:'text/html'});
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'index.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    status('barStatus', 'Downloaded. Upload this index.html to your hosting to publish it.');
+  };
+})();
+</script>
+</body>
+</html>

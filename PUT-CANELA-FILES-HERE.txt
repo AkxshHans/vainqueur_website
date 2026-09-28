@@ -1,0 +1,1 @@
+Add your licensed Canela Display file here as CanelaDisplay-Regular.woff2 and the site will use it automatically.
